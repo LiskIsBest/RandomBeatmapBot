@@ -12,6 +12,7 @@ bot = commands.Bot(command_prefix=">>", intents=intents)
 
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+TOKEN = os.getenv("TOKEN")
 ID_MAX = 5_000_000
 
 @bot.command()
@@ -33,7 +34,6 @@ async def givemap(ctx):
 	await ctx.send(f"Random beatmap: {beatmap.url}")
 	
 try:
-	bot.run(os.getenv("TOKEN"))
-	print("bot connected")
+	bot.run(TOKEN)
 except:
 	print("Failed")
