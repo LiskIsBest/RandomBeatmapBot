@@ -20,16 +20,16 @@ ID_MAX = 5_000_000
 VALID_MODES = ("osu","mania","fruits","taiko")
 
 @bot.before_invoke
-async def common(ctx):
+async def common(ctx: commands.Context):
 	author = ctx.message.author
 	print(f"USER:{author.name}, ID:{author.id}, COMMAND:{ctx.invoked_with}, TIME:{datetime.now().replace(microsecond=0)}")
 
 @bot.command()
-async def help(ctx):
+async def help(ctx: commands.Context):
 	await ctx.send('Commands:\n  >>givemap [osu, mania, taiko, fruits]\n  fruits = Catch the beat')
 
 @bot.command()
-async def random(ctx, arg=""):
+async def random(ctx: commands.Context, arg=""):
 	
 	if arg not in VALID_MODES:
 		print("Setting arg to None")
@@ -38,14 +38,16 @@ async def random(ctx, arg=""):
 		print(f"Arg is: {arg}")
 	
 	api = Ossapi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
-	
-	beatmap_id = randint(1,ID_MAX)
 
+	await ctx.send(f"{ctx.author.name}:API_CONNECTED")
+
+	beatmap_id = randint(1,ID_MAX)
 	try:
 		beatmap = api.beatmap(beatmap_id=beatmap_id)
 	except:
 		beatmap = None
 	while beatmap == None:
+			await ctx.send(f"{ctx.author.name}:BEATMAP_NONE")
 			beatmap_id = randint(1,ID_MAX)
 			try:
 				beatmap = api.beatmap(beatmap_id=beatmap_id)
@@ -55,7 +57,7 @@ async def random(ctx, arg=""):
 					beatmap = None
 			except:
 				beatmap = None
-	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{beatmap.status.value}")
+	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status.name).lower()}")
 	await ctx.send(f"{ctx.message.author.name} requested a random{' '+arg if arg != None else ''} beatmap: {beatmap.url}")
 	
 try:
