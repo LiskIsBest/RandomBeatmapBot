@@ -5,9 +5,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-# from ossapi import Ossapi
 from api import OsuApi
-from custom_types import BeatmapData
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -32,7 +30,7 @@ async def help(ctx: commands.Context):
 	await ctx.send('Commands:\n  >>givemap [osu, mania, taiko, fruits]\n  fruits = Catch the beat')
 
 @bot.command()
-async def random(ctx: commands.Context, arg=""):
+async def random(ctx: commands.Context, arg=None):
 	
 	if arg not in VALID_MODES:
 		print("Setting arg to None")
@@ -52,22 +50,22 @@ async def random(ctx: commands.Context, arg=""):
 		beatmap = None
 	while beatmap == None:
 			await asyncsleep(0)
-			print(f"{ctx.author.name}:BEATMAP_NONE")
 
 			beatmap_id = randint(1,ID_MAX)
 			try:
 				beatmap = api.lookup_beatmap(beatmap_id=beatmap_id)
 				if arg == None:
 					...
-				elif beatmap["mode"] != arg:
+				elif (mode := beatmap.mode.value) != arg:
+					print(f"{ctx.author.name}:BEATMAP_{mode.upper()}")
 					beatmap = None
 			except:
 				beatmap = None
-	# print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status.name).lower()}")
+	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status).lower()}")
 
 	
 
-	await ctx.send(f"{ctx.message.author.name} requested a random{' '+arg if arg != None else ''} beatmap: {beatmap['url']}")
+	await ctx.send(f"{ctx.message.author.name} requested a random{' '+arg if arg != None else ''} beatmap: {beatmap.url}")
 	
 try:
 	bot.run(TOKEN)
