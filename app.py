@@ -1,5 +1,6 @@
 import os
 from random import randint
+from asyncio import sleep as asyncsleep
 from datetime import datetime
 from dotenv import load_dotenv
 import discord
@@ -39,7 +40,8 @@ async def random(ctx: commands.Context, arg=""):
 	
 	api = Ossapi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 
-	await ctx.send(f"{ctx.author.name}:API_CONNECTED")
+	await asyncsleep(0)
+	print(f"{ctx.author.name}:API_CONNECTED")
 
 	beatmap_id = randint(1,ID_MAX)
 	try:
@@ -47,7 +49,10 @@ async def random(ctx: commands.Context, arg=""):
 	except:
 		beatmap = None
 	while beatmap == None:
-			await ctx.send(f"{ctx.author.name}:BEATMAP_NONE")
+			# await ctx.send(f"{ctx.author.name}:BEATMAP_NONE")
+			await asyncsleep(0)
+			print(f"{ctx.author.name}:BEATMAP_NONE")
+
 			beatmap_id = randint(1,ID_MAX)
 			try:
 				beatmap = api.beatmap(beatmap_id=beatmap_id)
