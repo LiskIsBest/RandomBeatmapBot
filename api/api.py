@@ -1,14 +1,11 @@
 import requests
+from .types import Beatmap
+from pydantic import parse_obj_as
 
 BASE_URL = "https://osu.ppy.sh/api/v2"
 TOKEN_URL = "https://osu.ppy.sh/oauth/token"
 
 class OsuApi:
-    headers = {
-        "Accept" : "application/json",
-        "Content-Type" : "application/json",
-    }
-    
     def __init__ (self, client_id:int=None, client_secret:str=None)->None:
         self.client_id = client_id
         self.client_secret = client_secret
@@ -27,10 +24,10 @@ class OsuApi:
             "scope" : "public",
         }
 
-        response = requests.post(url=TOKEN_URL, json=body_params, headers=self.headers).json()
+        response = requests.post(url=TOKEN_URL, json=body_params, headers=headers).json()
         return response["token_type"], response["expires_in"], response["access_token"]
 
-    def lookup_beatmap(self, beatmap_id:int|str=None, checksum:str="", filename:str="") -> dict:
+    def lookup_beatmap(self, beatmap_id:int|str=None, checksum:str="", filename:str="") -> Beatmap:
         if type(beatmap_id) == int:
             beatmap_id = str(beatmap_id)
         headers = {
@@ -46,5 +43,4 @@ class OsuApi:
 
         response = requests.get(url=BASE_URL+"/beatmaps/lookup", json=body_params, headers=headers)
         
-        return response.json()
-
+        return parse_obj_as(type_=Beatmap, obj=response.json())
