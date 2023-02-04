@@ -62,9 +62,6 @@ async def random(ctx: commands.Context, arg=None):
 			except:
 				beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status).lower()}")
-
-	
-
 	await ctx.send(f"{ctx.message.author.name} requested a random{' '+arg if arg != None else ''} beatmap: {beatmap.url}")
 	
 try:
