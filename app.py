@@ -1,7 +1,7 @@
 import os
 from random import randint
 from asyncio import sleep as asyncsleep
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
@@ -16,7 +16,7 @@ bot.remove_command("help")
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TOKEN = os.getenv("TOKEN")
-ID_MAX = 5_000_000
+ID_MAX = 4_100_000
 
 VALID_MODES = ("osu","mania","fruits","taiko")
 
@@ -62,7 +62,19 @@ async def random(ctx: commands.Context, arg=None):
 			except:
 				beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status).lower()}")
-	await ctx.send(f"{ctx.message.author.name} requested a random{' '+arg if arg != None else ''} beatmap: {beatmap.url}")
+
+	beatmap_length = timedelta(seconds=beatmap.total_length)
+	beatmap_length = ':'.join(str(beatmap_length).split(':')[1:])
+
+	embed=discord.Embed(description=f"Requested by {ctx.author.name}",color=0xff00d0)
+	embed.set_author(
+		name=beatmap.beatmapset.artist+" - "+beatmap.beatmapset.title, 
+		url=beatmap.url)
+	embed.add_field(name="", value=f"**Length:** {beatmap_length}", inline=True)
+	embed.add_field(name="", value=f"**bpm:** {int(beatmap.bpm)}", inline=True)
+	embed.add_field(name="", value=f"**Mode:** {beatmap.mode.value}", inline=True)
+	embed.set_image(url=beatmap.beatmapset.covers.card2x)
+	await ctx.send(embed=embed)
 	
 try:
 	bot.run(TOKEN)
