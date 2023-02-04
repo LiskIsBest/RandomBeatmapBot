@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import BaseModel, Field
 from typing import Optional
 
-class GameMode(Enum):
+class GameMode(str, Enum):
     OSU = "osu"
     MANIA = "mania"
     FRUITS = "fruits"
@@ -22,9 +22,6 @@ class Covers(BaseModel):
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {
-                datetime: str,
-                }
     
 class Availability(BaseModel):
     download_disabled: bool
@@ -58,14 +55,11 @@ class BeatmapsetCompact(BaseModel):
     title_unicode: str
     user_id: int
     video: bool
-    ratins: list[int]
+    ratings: list[int]
 
     class Config:
         allow_population_by_field_name = True
         arbitrary_types_allowed = True
-        json_encoders = {
-                datetime: str,
-                }
 
 class Beatmapset(BeatmapsetCompact):
     availability: Availability
@@ -96,28 +90,25 @@ class BeatmapCompact(BaseModel):
     beatmapset_id: int
     difficulty_rating: float
     id: int
-    mode: str
+    mode: GameMode
     status: str
     total_length: int
     user_id: int
     version: str
-    beatmapset: Optional[Beatmapset|BeatmapsetCompact]
-    checksum: Optional[str]
-    failtimes: Optional[Failtimes]
-    max_combo: Optional[int]
+    beatmapset: Beatmapset | BeatmapsetCompact
+    checksum: str
+    failtimes: Failtimes
+    max_combo: int
 
     class Config:
         arbitrary_types_allowed = True
-        json_encoders = {
-                datetime: str,
-                }
     
 class Beatmap(BeatmapCompact):
     accuracy: float
     ar: float
     beatmapset_id: int
     bpm: Optional[float]
-    covert: bool
+    convert: bool
     count_circles: int
     count_sliders: int
     count_spinners: int
