@@ -66,13 +66,11 @@ async def random(ctx: commands.Context, arg=None):
 	beatmap_length = timedelta(seconds=beatmap.total_length)
 	beatmap_length = ':'.join(str(beatmap_length).split(':')[1:])
 
-	embed=discord.Embed(description=f"Requested by {ctx.author.name}",color=0xff00d0)
+	embed=discord.Embed(title=beatmap.url,description=f"Requested by {ctx.author.name}", url=beatmap.url,color=0xff00d0)
 	embed.set_author(
 		name=beatmap.beatmapset.artist+" - "+beatmap.beatmapset.title, 
 		url=beatmap.url)
-	embed.add_field(name="", value=f"**Length:** {beatmap_length}", inline=True)
-	embed.add_field(name="", value=f"**bpm:** {int(beatmap.bpm)}", inline=True)
-	embed.add_field(name="", value=f"**Mode:** {beatmap.mode.value}", inline=True)
+	embed.add_field(name="", value=f"**Length:** {beatmap_length} **bpm:** {int(beatmap.bpm)} **Mode:** {beatmap.mode.value}", inline=True)
 	embed.set_image(url=beatmap.beatmapset.covers.card2x)
 	await ctx.send(embed=embed)
 	
