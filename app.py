@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from api import OsuApi, Beatmap
+from losuapi import OsuApi, Beatmap
 load_dotenv()
 
 intents = discord.Intents.default()
