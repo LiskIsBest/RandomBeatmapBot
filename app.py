@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from api import OsuApi
+from api import OsuApi, Beatmap
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -19,6 +19,18 @@ TOKEN = os.getenv("TOKEN")
 ID_MAX = 4_100_000
 
 VALID_MODES = ("osu","mania","fruits","taiko")
+
+def random_embed(beatmap: Beatmap, ctx: commands.Context)->discord.Embed:
+	beatmap_length = timedelta(seconds=beatmap.total_length)
+	beatmap_length = ':'.join(str(beatmap_length).split(':')[1:])
+
+	embed=discord.Embed(title=beatmap.url,description=f"Requested by {ctx.author.name}", url=beatmap.url,color=0xff00d0)
+	embed.set_author(
+		name=beatmap.beatmapset.artist+" - "+beatmap.beatmapset.title, 
+		url=beatmap.url)
+	embed.add_field(name="", value=f"**Length:** {beatmap_length} **bpm:** {int(beatmap.bpm)} **Mode:** {beatmap.mode.value}", inline=True)
+	embed.set_image(url=beatmap.beatmapset.covers.card2x)
+	return embed
 
 @bot.before_invoke
 async def common(ctx: commands.Context):
@@ -63,15 +75,7 @@ async def random(ctx: commands.Context, arg=None):
 				beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status).lower()}")
 
-	beatmap_length = timedelta(seconds=beatmap.total_length)
-	beatmap_length = ':'.join(str(beatmap_length).split(':')[1:])
-
-	embed=discord.Embed(title=beatmap.url,description=f"Requested by {ctx.author.name}", url=beatmap.url,color=0xff00d0)
-	embed.set_author(
-		name=beatmap.beatmapset.artist+" - "+beatmap.beatmapset.title, 
-		url=beatmap.url)
-	embed.add_field(name="", value=f"**Length:** {beatmap_length} **bpm:** {int(beatmap.bpm)} **Mode:** {beatmap.mode.value}", inline=True)
-	embed.set_image(url=beatmap.beatmapset.covers.card2x)
+	embed = random_embed(beatmap, ctx=ctx)
 	await ctx.send(embed=embed)
 	
 try:
