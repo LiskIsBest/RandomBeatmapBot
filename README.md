@@ -24,4 +24,3 @@ export TOKEN = discord_bot_token
 - [Losuapi](https://github.com/LiskIsBest/Losuapi)
 - [Discord.py](https://discordpy.readthedocs.io/en/stable/)
 - [Pydantic](https://docs.pydantic.dev/)
-- [Requests](https://requests.readthedocs.io/en/latest/)
