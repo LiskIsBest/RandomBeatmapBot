@@ -1,11 +1,10 @@
 import os
 from random import randint
-from asyncio import sleep as asyncsleep
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from losuapi import OsuApi
+from losuapi import AsyncOsuApi
 from losuapi.types import Beatmap
 load_dotenv()
 
@@ -19,7 +18,7 @@ CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TOKEN = os.getenv("TOKEN")
 ID_MAX = 4_100_000
 
-VALID_MODES = ("osu","mania","fruits","taiko")
+VALID_MODES = {"osu","mania","fruits","taiko"}
 
 def random_embed(beatmap: Beatmap, ctx: commands.Context)->discord.Embed:
 	beatmap_length = timedelta(seconds=beatmap.total_length)
@@ -46,32 +45,36 @@ async def help(ctx: commands.Context):
 async def random(ctx: commands.Context, arg=None):
 	
 	if arg not in VALID_MODES:
-		print("Setting arg to None")
+		print("Arg is None")
 		arg = None
 	else:
 		print(f"Arg is: {arg}")
 	
-	api = OsuApi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
-
-	await asyncsleep(0)
+	api = AsyncOsuApi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
 	print(f"{ctx.author.name}:API_CONNECTED")
 
 	beatmap_id = randint(1,ID_MAX)
 	try:
-		beatmap = api.lookup_beatmap(beatmap_id=beatmap_id)
+		beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+		if arg:
+			if beatmap.mode != arg:
+				print(f"{ctx.author.name}:WRONG_TYPE_{beatmap.mode.upper()}")
+				beatmap = None
+		else:
+			...
 	except:
 		beatmap = None
 	while beatmap == None:
-			await asyncsleep(0)
 
 			beatmap_id = randint(1,ID_MAX)
 			try:
-				beatmap = api.lookup_beatmap(beatmap_id=beatmap_id)
-				if arg == None:
+				beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+				if arg:
+					if beatmap.mode != arg:
+						print(f"{ctx.author.name}:WRONG_TYPE_{beatmap.mode.upper()}")
+						beatmap = None
+				else:
 					...
-				elif (mode := beatmap.mode) != arg:
-					print(f"{ctx.author.name}:BEATMAP_{mode.upper()}")
-					beatmap = None
 			except:
 				beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}")
