@@ -5,7 +5,8 @@ from datetime import datetime, timedelta
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from losuapi import OsuApi, Beatmap
+from losuapi import OsuApi
+from losuapi.types import Beatmap
 load_dotenv()
 
 intents = discord.Intents.default()
@@ -28,7 +29,7 @@ def random_embed(beatmap: Beatmap, ctx: commands.Context)->discord.Embed:
 	embed.set_author(
 		name=beatmap.beatmapset.artist+" - "+beatmap.beatmapset.title, 
 		url=beatmap.url)
-	embed.add_field(name="", value=f"**Length:** {beatmap_length} **bpm:** {int(beatmap.bpm)} **Mode:** {beatmap.mode.value}", inline=True)
+	embed.add_field(name="", value=f"**Length:** {beatmap_length} **bpm:** {int(beatmap.bpm)} **Mode:** {beatmap.mode}", inline=True)
 	embed.set_image(url=beatmap.beatmapset.covers.card2x)
 	return embed
 
@@ -68,12 +69,12 @@ async def random(ctx: commands.Context, arg=None):
 				beatmap = api.lookup_beatmap(beatmap_id=beatmap_id)
 				if arg == None:
 					...
-				elif (mode := beatmap.mode.value) != arg:
+				elif (mode := beatmap.mode) != arg:
 					print(f"{ctx.author.name}:BEATMAP_{mode.upper()}")
 					beatmap = None
 			except:
 				beatmap = None
-	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode.value}, STATUS:{(beatmap.status).lower()}")
+	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}")
 
 	embed = random_embed(beatmap, ctx=ctx)
 	await ctx.send(embed=embed)
