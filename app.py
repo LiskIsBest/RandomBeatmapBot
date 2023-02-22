@@ -45,7 +45,7 @@ def help_embed(ctx: commands.Context):
 	return embed
 
 @bot.command()
-async def help2(ctx: commands.Context):
+async def help(ctx: commands.Context):
 	"""Discord command: >>help
 	
 	Sends a discord embeded message back in the same channel that the command was called.
@@ -98,7 +98,7 @@ def random_embed(ctx: commands.Context, beatmap: Beatmap)->discord.Embed:
 	return embed
 
 @bot.command()
-async def random2(ctx: commands.Context, arg=None):
+async def random(ctx: commands.Context, arg=None):
 	"""Discord command: >>random {gamemode}
 	
 	Sends a discord embeded message back in the same channel that the command was called.
