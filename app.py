@@ -83,7 +83,7 @@ async def random(ctx: commands.Context, arg=None):
 					pass
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}")
 
-	embed = random_embed(beatmap, ctx=ctx)
+	embed = random_embed(ctx=ctx, beatmap=beatmap)
 	await ctx.send(embed=embed)
 
 bot.run(TOKEN)
