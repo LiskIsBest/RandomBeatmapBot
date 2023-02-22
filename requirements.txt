@@ -12,7 +12,7 @@ h11==0.14.0
 httpcore==0.16.3
 httpx==0.23.3
 idna==3.4
-losuapi==0.0.6
+losuapi==0.1.2
 multidict==6.0.4
 pydantic==1.10.4
 python-dotenv==0.21.1
