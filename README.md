@@ -20,6 +20,8 @@ export TOKEN = discord_bot_token
   - help: >>help
   - random: >>random {GameMode}
 
+![](https://media.giphy.com/media/I6TUJS7yNhRXiw9U5a/giphy.gif)
+
 ### Main dependencies
 - [Losuapi](https://github.com/LiskIsBest/Losuapi)
 - [Discord.py](https://discordpy.readthedocs.io/en/stable/)
