@@ -73,7 +73,6 @@ async def random(ctx: commands.Context, arg=None):
 	while beatmap == None:
 
 			beatmap_id = randint(1,ID_MAX)
-			# try:
 			beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
 			if beatmap:
 				if arg:
@@ -82,8 +81,6 @@ async def random(ctx: commands.Context, arg=None):
 						beatmap = None
 				else:
 					pass
-			# except:
-			# 	beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}")
 
 	embed = random_embed(beatmap, ctx=ctx)
