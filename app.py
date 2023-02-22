@@ -13,14 +13,14 @@ intents.message_content = True
 bot = commands.Bot(command_prefix=">>", intents=intents)
 bot.remove_command("help")
 
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
-TOKEN = os.getenv("TOKEN")
+CLIENT_ID = os.environ.get("CLIENT_ID")
+CLIENT_SECRET = os.environ.get("CLIENT_SECRET")
+TOKEN = os.environ.get("TOKEN")
 ID_MAX = 4_100_000
 
 VALID_MODES = {"osu","mania","fruits","taiko"}
 
-def random_embed(beatmap: Beatmap, ctx: commands.Context)->discord.Embed:
+def random_embed(ctx: commands.Context, beatmap: Beatmap)->discord.Embed:
 	beatmap_length = timedelta(seconds=beatmap.total_length)
 	beatmap_length = ':'.join(str(beatmap_length).split(':')[1:])
 
@@ -32,6 +32,13 @@ def random_embed(beatmap: Beatmap, ctx: commands.Context)->discord.Embed:
 	embed.set_image(url=beatmap.beatmapset.covers.card2x)
 	return embed
 
+def help_embed(ctx: commands.Context):
+	embed = discord.Embed(title="Help", color=0xff00d0)
+	embed.add_field(name="", value="**Command prefix:** `>>`", inline=False)
+	embed.add_field(name="", value="**Command:** `help` - Replies with help information.", inline=False)
+	embed.add_field(name="", value="**Command:** `random {Gamemode}` - Replies with a random beatmap of given map.", inline=False)
+	return embed
+
 @bot.before_invoke
 async def common(ctx: commands.Context):
 	author = ctx.message.author
@@ -39,7 +46,8 @@ async def common(ctx: commands.Context):
 
 @bot.command()
 async def help(ctx: commands.Context):
-	await ctx.send('Commands:\n  >>givemap [osu, mania, taiko, fruits]\n  fruits = Catch the beat')
+	embed = help_embed(ctx=ctx)
+	await ctx.send(embed=embed)
 
 @bot.command()
 async def random(ctx: commands.Context, arg=None):
@@ -54,35 +62,31 @@ async def random(ctx: commands.Context, arg=None):
 	print(f"{ctx.author.name}:API_CONNECTED")
 
 	beatmap_id = randint(1,ID_MAX)
-	try:
-		beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+	beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+	if beatmap:
 		if arg:
 			if beatmap.mode != arg:
 				print(f"{ctx.author.name}:WRONG_TYPE_{beatmap.mode.upper()}")
 				beatmap = None
 		else:
-			...
-	except:
-		beatmap = None
+			pass
 	while beatmap == None:
 
 			beatmap_id = randint(1,ID_MAX)
-			try:
-				beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+			# try:
+			beatmap = await api.lookup_beatmap(beatmap_id=beatmap_id)
+			if beatmap:
 				if arg:
 					if beatmap.mode != arg:
 						print(f"{ctx.author.name}:WRONG_TYPE_{beatmap.mode.upper()}")
 						beatmap = None
 				else:
-					...
-			except:
-				beatmap = None
+					pass
+			# except:
+			# 	beatmap = None
 	print(f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}")
 
 	embed = random_embed(beatmap, ctx=ctx)
 	await ctx.send(embed=embed)
-	
-try:
-	bot.run(TOKEN)
-except:
-	print("Failed")
+
+bot.run(TOKEN)
