@@ -1,16 +1,15 @@
 import os
-from typing import Any
 from random import randint
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-import discord
+from discord import Intents, ApplicationContext, Embed, utils
 from discord.ext import commands
 from losuapi import AsyncOsuApi
 from losuapi.types import Beatmap, GameMode
 
 load_dotenv()
 
-intents = discord.Intents.default()
+intents = Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix=">>", intents=intents)
 bot.remove_command("help")
@@ -23,16 +22,21 @@ ID_MAX = 4_100_000
 VALID_MODES = GameMode.list()
 
 
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
+
+
 @bot.before_invoke
 async def common(ctx: commands.Context):
     """Runs whenever a bot command is called."""
-    author = ctx.message.author
+    author = ctx.author
     print(
-        f"COMMAND:{ctx.invoked_with}, USER:{author.name}, ID:{author.id}, TIME:{datetime.now().replace(microsecond=0)}"
+        f"COMMAND:{ctx.command.name}, USER:{author.name}, ID:{author.id}, TIME:{datetime.now().replace(microsecond=0)}"
     )
 
 
-def help_embed(ctx: commands.Context):
+def help_embed() -> Embed:
     """
     Returns a Discord embed message object.
 
@@ -42,7 +46,7 @@ def help_embed(ctx: commands.Context):
             ctx: discord.ext.commands.Context - discord message context.
     rtype: discord.Embed
     """
-    embed = discord.Embed(title="Help", color=0xFF00D0)
+    embed = Embed(title="Help", color=0xFF00D0)
     embed.add_field(name="", value="**Command prefix:** `>>`", inline=False)
     embed.add_field(
         name="",
@@ -62,13 +66,15 @@ def help_embed(ctx: commands.Context):
     return embed
 
 
-@bot.command()
-async def help(ctx: commands.Context):
+# @bot.command()
+@bot.slash_command()
+async def help(ctx: ApplicationContext):
     """Discord command: >>help
 
     Sends a discord embeded message back in the same channel that the command was called.
     """
-    embed = help_embed(ctx=ctx)
+    await ctx.respond("‎", ephemeral=True, delete_after=0)
+    embed = help_embed()
     await ctx.send(embed=embed)
 
 
@@ -97,7 +103,7 @@ async def find_beatmap(
     return beatmap
 
 
-def random_embed(ctx: commands.Context, beatmap: Beatmap) -> discord.Embed:
+def random_embed(ctx: commands.Context, beatmap: Beatmap) -> Embed:
     """
     Returns a Discord embed message object.
 
@@ -111,7 +117,7 @@ def random_embed(ctx: commands.Context, beatmap: Beatmap) -> discord.Embed:
     beatmap_length = timedelta(seconds=beatmap.total_length)
     beatmap_length = ":".join(str(beatmap_length).split(":")[1:])
 
-    embed = discord.Embed(
+    embed = Embed(
         title=beatmap.url,
         description=f"Requested by {ctx.author.name}",
         url=beatmap.url,
@@ -130,31 +136,38 @@ def random_embed(ctx: commands.Context, beatmap: Beatmap) -> discord.Embed:
     return embed
 
 
-@bot.command()
-async def random(ctx: commands.Context, arg=None):
+# @bot.command()
+@bot.slash_command()
+async def random(ctx: ApplicationContext, mode: str = None):
     """Discord command: >>random {gamemode}
 
     Sends a discord embeded message back in the same channel that the command was called.
 
     parameters:
             ctx: discord.ext.commands.Context - discord message context.
-            arg: Any - first text after the command call seperated by whitespace.
+            mode: Any - first text after the command call seperated by whitespace.
     """
 
-    if isinstance(arg, str):
-        arg = arg.lower()
-    if arg not in VALID_MODES:
-        arg = None
+    if isinstance(mode, str):
+        mode = mode.lower().strip()
+    if mode not in VALID_MODES:
+        mode = None
     print(
-        f"USER:{ctx.author.name}, ARG:{arg}, TIME:{datetime.now().replace(microsecond=0)}"
+        f"USER:{ctx.author.name}, ARG:{mode}, TIME:{datetime.now().replace(microsecond=0)}"
+    )
+
+    await ctx.respond(
+        f"Searching for a {mode if mode else 'random'} beatmap <a:ellipsedots:1078294305141166131>",
+        ephemeral=True,
+        delete_after=10,
     )
 
     api = AsyncOsuApi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
     wrong_type_count = [0]
 
-    beatmap = await find_beatmap(api=api, arg=arg, wrong=wrong_type_count)
+    beatmap = await find_beatmap(api=api, arg=mode, wrong=wrong_type_count)
     while beatmap == None:
-        beatmap = await find_beatmap(api=api, arg=arg, wrong=wrong_type_count)
+        beatmap = await find_beatmap(api=api, arg=mode, wrong=wrong_type_count)
 
     print(
         f"FOUND:{beatmap.url}, MODE:{beatmap.mode}, STATUS:{(beatmap.status).lower()}, TRIES:{wrong_type_count[0]}"
