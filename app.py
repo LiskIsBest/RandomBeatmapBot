@@ -11,7 +11,7 @@ load_dotenv()
 
 intents = Intents.default()
 intents.message_content = True
-bot = commands.Bot(command_prefix=">>", intents=intents)
+bot = commands.Bot(intents=intents)
 bot.remove_command("help")
 
 CLIENT_ID = os.environ.get("CLIENT_ID")
@@ -47,15 +47,14 @@ def help_embed() -> Embed:
     rtype: discord.Embed
     """
     embed = Embed(title="Help", color=0xFF00D0)
-    embed.add_field(name="", value="**Command prefix:** `>>`", inline=False)
     embed.add_field(
         name="",
-        value="**Command:** `help` - Replies with help information.",
+        value="**Command:** `/help` - Replies with help information.",
         inline=False,
     )
     embed.add_field(
         name="",
-        value="**Command:** `random {Gamemode}` - Replies with a random beatmap of given map.",
+        value="**Command:** `/random {Gamemode}` - Replies with a random beatmap of given map.",
         inline=False,
     )
     embed.add_field(
