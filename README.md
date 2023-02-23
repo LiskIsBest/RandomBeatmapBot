@@ -15,14 +15,13 @@ export TOKEN = discord_bot_token
 ```
 
 ## Usage
-- Default command prefix: ">>"
 - Commands: 
-  - help: >>help
-  - random: >>random {GameMode}
+  - help: /help
+  - random: /random {GameMode}
 
 ![](https://media.giphy.com/media/I6TUJS7yNhRXiw9U5a/giphy.gif)
 
 ### Main dependencies
 - [Losuapi](https://github.com/LiskIsBest/Losuapi)
-- [Discord.py](https://discordpy.readthedocs.io/en/stable/)
+- [Pycord](https://docs.pycord.dev/en/stable/)
 - [Pydantic](https://docs.pydantic.dev/)
