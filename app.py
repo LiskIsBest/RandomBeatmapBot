@@ -156,11 +156,7 @@ async def random(ctx: ApplicationContext, mode: str = None):
         f"USER:{ctx.author.name}, ARG:{mode}, TIME:{datetime.now().replace(microsecond=0)}"
     )
 
-    await ctx.respond(
-        f"Searching for a {mode if mode else 'random'} beatmap <a:ellipsedots:1078294305141166131>",
-        ephemeral=True,
-        delete_after=10,
-    )
+    await ctx.respond("‎", ephemeral=True, delete_after=0)
 
     api = AsyncOsuApi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
     wrong_type_count = [0]
