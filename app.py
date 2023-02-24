@@ -2,7 +2,7 @@ import os
 from random import randint
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
-from discord import Intents, ApplicationContext, Embed, utils
+from discord import Intents, ApplicationContext, Embed, Option
 from discord.ext import commands
 from losuapi import AsyncOsuApi
 from losuapi.types import Beatmap, GameMode
@@ -65,7 +65,7 @@ def help_embed() -> Embed:
     return embed
 
 
-@bot.slash_command()
+@bot.slash_command(name="help", description="Replies with help information.")
 async def help(ctx: ApplicationContext):
     """
     Discord command: /help
@@ -135,8 +135,8 @@ def random_embed(ctx: commands.Context, beatmap: Beatmap) -> Embed:
     return embed
 
 
-@bot.slash_command()
-async def random(ctx: ApplicationContext, mode: str = None):
+@bot.slash_command(name="random", description="Replies with a random beatmap of given map.")
+async def random(ctx: ApplicationContext, mode: Option(str, description="Osu! Gamemode",choices=['osu', 'mania', 'taiko', 'fruits']) = None):
     """
     Discord command: /random {gamemode}
 
