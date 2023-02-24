@@ -67,11 +67,12 @@ def help_embed() -> Embed:
 
 @bot.slash_command()
 async def help(ctx: ApplicationContext):
-    """Discord command: >>help
+    """
+    Discord command: /help
 
     Sends a discord embeded message back in the same channel that the command was called.
     """
-    await ctx.respond("‎", ephemeral=True, delete_after=0)
+    await ctx.respond("‎", ephemeral=True, delete_after=0) # uses inivisable character
     embed = help_embed()
     await ctx.send(embed=embed)
 
@@ -137,7 +138,7 @@ def random_embed(ctx: commands.Context, beatmap: Beatmap) -> Embed:
 @bot.slash_command()
 async def random(ctx: ApplicationContext, mode: str = None):
     """
-    Discord command: >>random {gamemode}
+    Discord command: /random {gamemode}
 
     Sends a discord embeded message back in the same channel that the command was called.
 
@@ -154,7 +155,7 @@ async def random(ctx: ApplicationContext, mode: str = None):
         f"USER:{ctx.author.name}, ARG:{mode}, TIME:{datetime.now().replace(microsecond=0)}"
     )
 
-    await ctx.respond("‎", ephemeral=True, delete_after=0)
+    await ctx.respond("‎", ephemeral=True, delete_after=0) # uses inivisable character
 
     api = AsyncOsuApi(client_id=CLIENT_ID, client_secret=CLIENT_SECRET)
     wrong_type_count = [0]
